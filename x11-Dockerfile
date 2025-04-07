@@ -1,0 +1,69 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+
+
+
+FROM python:3.9-slim AS base
+
+
+RUN groupadd -g 1234 gamegrp && \
+    useradd -m -u 1234 -g gamegrp gameusr
+
+
+# Install system dependencies including X11 and OpenGL support
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xvfb \
+    x11-utils \
+    libx11-6 \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libwayland-client0 \
+    libwayland-cursor0 \
+    libwayland-egl1 \
+    libxkbcommon0 \
+    libdecor-0-0 \
+    libdecor-0-plugin-1 \
+    wayland-protocols \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up working directory
+WORKDIR /app
+RUN chown -R gameusr:gamegrp /app
+RUN echo '#!/bin/bash\nXvfb $DISPLAY -screen 0 1024x768x16 &\nexec "$@"' > /entrypoint.sh 
+RUN chown -R gameusr:gamegrp /entrypoint.sh \
+    && chmod +x /entrypoint.sh    
+
+USER gameusr
+
+COPY --chown=gameusr:gamegrp requirements.txt .
+
+RUN pip install --no-cache-dir --user --upgrade pip && \
+    pip install torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --user -r requirements.txt && \
+    pip install --no-cache-dir --user pgzero && \
+    pip install --no-cache-dir --user swig
+
+ENV PATH=/home/gameusr/.local/bin:$PATH
+
+# Copy the game files
+COPY --chown=gameusr:gamegrp maze_game.py user.py ai_agent.py Board.py ./
+COPY --chown=gameusr:gamegrp gymnasium_env ./gymnasium_env/
+COPY --chown=gameusr:gamegrp images ./images/
+COPY --chown=gameusr:gamegrp trained_maze_model.zip ./
+
+# Setup virtual display for GUI applications
+ENV DISPLAY=:99
+ENV PYTHONUNBUFFERED=1
+
+# RUN echo '#!/bin/bash\nXvfb $DISPLAY -screen 0 1024x768x16 &\nexec "$@"' > /entrypoint.sh \
+#     && chmod +x /entrypoint.sh
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+CMD python -c "import sys; sys.exit(0)" || exit 1
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "maze_game.py"]

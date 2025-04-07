@@ -1,0 +1,50 @@
+# syntax=docker/dockerfile:1
+# check=error=true
+
+
+FROM python:3.10-slim AS base
+
+RUN groupadd -g 1234 gamegrp && \
+    useradd -m -u 1234 -g gamegrp gameusr
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libwayland-client0 \
+    libwayland-cursor0 \
+    libwayland-egl1 \
+    libxkbcommon0 \
+    libdecor-0-0 \
+    libdecor-0-plugin-1 \
+    wayland-protocols \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+RUN chown -R gameusr:gamegrp /app
+
+USER gameusr
+
+COPY --chown=gameusr:gamegrp requirements.txt .
+
+RUN pip install --no-cache-dir --user --upgrade pip && \
+    pip install torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --user -r requirements.txt && \
+    pip install --no-cache-dir --user pgzero && \
+    pip install --no-cache-dir --user swig
+
+ENV PATH=/home/gameusr/.local/bin:$PATH
+
+COPY --chown=gameusr:gamegrp maze_game.py user.py ai_agent.py Board.py ./
+COPY --chown=gameusr:gamegrp gymnasium_env ./gymnasium_env/
+COPY --chown=gameusr:gamegrp images ./images/
+COPY --chown=gameusr:gamegrp trained_maze_model.zip ./
+
+ENV PYTHONUNBUFFERED=1
+ENV SDL_VIDEODRIVER=wayland
+ENV GDK_BACKEND=wayland
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD python -c "import sys; sys.exit(0)" || exit 1
+
+CMD ["python", "maze_game.py"]
+
