@@ -145,10 +145,11 @@ class MazeWorldEnv(gym.Env):
                 self.clock = pygame.time.Clock()
 
             if not hasattr(self, 'agent_img') or self.agent_img is None:
-                self.agent_img = pygame.image.load("/home/souha/maze_game/images/ghost.png").convert_alpha()
-            
+                # self.agent_img = pygame.image.load("/home/souha/maze_game/images/ghost.png").convert_alpha()
+                self.agent_img = pygame.image.load("./images/ghost.png").convert_alpha()    #PATH INSIDE DOCKER CONTAINER 
             if not hasattr(self, 'target_img') or self.target_img is None:
-                self.target_img = pygame.image.load("/home/souha/maze_game/images/home.png").convert_alpha()
+                # self.target_img = pygame.image.load("/home/souha/maze_game/images/home.png").convert_alpha()
+                self.target_img = pygame.image.load("./images/home.png").convert_alpha()
                
             
             
