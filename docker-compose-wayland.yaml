@@ -1,0 +1,12 @@
+services:
+  mazegame:
+    build: 
+      context: .
+      dockerfile: /home/souha/maze_game/wayland-Dockerfile
+    volumes:
+      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:/tmp/${WAYLAND_DISPLAY}
+    environment:
+      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      - XDG_RUNTIME_DIR=/tmp
+      - SDL_VIDEODRIVER=wayland
+      - GDK_BACKEND=wayland

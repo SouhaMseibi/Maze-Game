@@ -1,0 +1,15 @@
+
+services:
+  mazegame:
+    build: 
+      context: .
+      dockerfile: /home/souha/maze_game/x11-Dockerfile
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - $XAUTH:$XAUTH
+    environment:
+      - DISPLAY=${DISPLAY}
+      - XAUTHORITY=/tmp/.docker.xauth
+    network_mode: "host"
+
+    
