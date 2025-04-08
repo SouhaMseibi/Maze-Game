@@ -61,12 +61,12 @@ jobs:
           
           if [ "$RUNNING" = "true" ]; then
             echo "Container is running successfully!"
-            docker-compose -f docker-compose-x11.yaml logs
-            docker-compose -f docker-compose-x11.yaml down
+            docker compose -f docker-compose-x11.yaml logs
+            docker compose -f docker-compose-x11.yaml down
             exit 0
           else
             echo "Container failed to start properly"
-            docker-compose -f docker-compose-x11.yaml logs
-            docker-compose -f docker-compose-x11.yaml down
+            docker compose -f docker-compose-x11.yaml logs
+            docker compose -f docker-compose-x11.yaml down
             exit 1
           fi
