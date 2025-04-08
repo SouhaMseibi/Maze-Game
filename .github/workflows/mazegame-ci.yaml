@@ -22,10 +22,8 @@ jobs:
         run: |
           pip install  --upgrade pip 
           pip install pytest pytest-mock
-          pip install torch --index-url https://download.pytorch.org/whl/cpu 
-          pip install  -r requirements.txt 
-          pip install  pgzero 
-          pip install  swig
+          pip install gymnasium==1.0.0
+          pip install numpy==1.21.5
 
       - name: Run maze environment tests
         run: |
@@ -33,14 +31,14 @@ jobs:
   
   test-docker:
     runs-on: ubuntu-latest
-    needs: test-environment
+    # needs: test-environment
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-        
+
       - name: Test with docker-compose
         run: |
           XAUTH=/tmp/.docker.xauth
