@@ -53,7 +53,7 @@ jobs:
           
           Xvfb $DISPLAY -screen 0 1024x768x16 &
           
-          docker compose -f docker-compose-x11.yaml up 
+          docker compose -f docker-compose-x11.yaml up  -d 
           
           CONTAINER_ID=$(docker compose -f docker-compose-x11.yaml ps -q)
           echo "Container ID: $CONTAINER_ID"
