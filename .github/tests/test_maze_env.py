@@ -4,7 +4,6 @@ import gymnasium
 import gymnasium_env
 from gymnasium import spaces
 from gymnasium.envs.registration import register
-from gymnasium_env.MazeWorldEnv import MazeWorldEnv
 
 def test_maze_env_initialization():
     env = gymnasium.make('gymnasium_env/MazeWorldEnv-v0', render_mode="human")
