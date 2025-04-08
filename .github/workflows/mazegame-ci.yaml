@@ -1,8 +1,7 @@
 name: Maze Game CI
 
 on:
-  commit:
-    branches: [ main ]
+
   push:
     branches: [ main ]
   pull_request:
