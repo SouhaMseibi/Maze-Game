@@ -3,7 +3,7 @@ services:
   mazegame:
     build: 
       context: .
-      dockerfile: /home/souha/maze_game/x11-Dockerfile
+      dockerfile: x11-Dockerfile
       
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix

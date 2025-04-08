@@ -31,7 +31,7 @@ jobs:
 
       - name: Run maze environment tests
         run: |
-          pytest .github/tests/test_maze_env.py -v
+          pytest test_maze_env.py -v
   
   test-docker:
     runs-on: ubuntu-latest
