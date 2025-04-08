@@ -28,6 +28,7 @@ jobs:
           pip install pytest pytest-mock
           pip install gymnasium==1.0.0
           pip install numpy==1.21.5
+          pip install pygame==2.6.1
 
       - name: Run maze environment tests
         run: |
