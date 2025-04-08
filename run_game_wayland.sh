@@ -33,7 +33,7 @@ fi
 #     docker-compose up --build -f docker-compose-wayland.yml
 if command -v docker compose &> /dev/null; then
     echo "Running maze game with docker compose..."
-    docker compose -f docker-compose-wayland.yml up 
+    docker compose -f docker-compose-wayland.yaml up 
 else
     echo "Docker Compose not found. Running with plain Docker..."
     

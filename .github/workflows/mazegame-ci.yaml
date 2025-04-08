@@ -1,0 +1,73 @@
+name: Maze Game CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install  --upgrade pip 
+          pip install pytest pytest-mock
+          pip install torch --index-url https://download.pytorch.org/whl/cpu 
+          pip install  -r requirements.txt 
+          pip install  pgzero 
+          pip install  swig
+
+      - name: Run maze environment tests
+        run: |
+          pytest tests/test_maze_env.py -v
+  
+  test-docker:
+    runs-on: ubuntu-latest
+    needs: test-environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Test with docker-compose
+        run: |
+          XAUTH=/tmp/.docker.xauth
+          touch $XAUTH
+          echo "ffff 0100000000000000 $(openssl rand -hex 100)" > $XAUTH
+          chmod 777 $XAUTH
+          
+          export DISPLAY=${DISPLAY}
+          export XAUTH=$XAUTH
+          export XAUTHORITY=$XAUTH
+          
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+          
+          docker-compose -f docker-compose-x11.yaml up 
+          
+          CONTAINER_ID=$(docker compose -f docker-compose-x11.yaml ps -q)
+          echo "Container ID: $CONTAINER_ID"
+          RUNNING=$(docker inspect --format="{{.State.Running}}" $CONTAINER_ID)
+          
+          if [ "$RUNNING" = "true" ]; then
+            echo "Container is running successfully!"
+            docker-compose -f docker-compose-x11.yaml logs
+            docker-compose -f docker-compose-x11.yaml down
+            exit 0
+          else
+            echo "Container failed to start properly"
+            docker-compose -f docker-compose-x11.yaml logs
+            docker-compose -f docker-compose-x11.yaml down
+            exit 1
+          fi

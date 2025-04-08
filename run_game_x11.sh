@@ -10,13 +10,13 @@ if [ ! -f $XAUTH ]; then
     chmod 777 $XAUTH
 fi
 
-if [ -z "${XAUTH}" ]; then
-    echo "Set XAUTH env variable ... "
-    export XAUTH=/tmp/.docker.xauth
-else
-    echo "XAUTH is set ... "
-fi
-
+# if [ -z "${XAUTH}" ]; then
+#     echo "Set XAUTH env variable ... "
+#     export XAUTH=/tmp/.docker.xauth
+# else
+#     echo "XAUTH is set ... "
+# fi
+export XAUTH=/tmp/.docker.xauth
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
     echo "Error: Docker is not running or you don't have permission to use it."
