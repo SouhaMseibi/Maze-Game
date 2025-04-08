@@ -1,7 +1,7 @@
 name: Maze Game CI
 
 on:
-  push:
+  commit:
     branches: [ main ]
   pull_request:
     branches: [ main ]
@@ -27,7 +27,7 @@ jobs:
 
       - name: Run maze environment tests
         run: |
-          pytest /home/souha/maze_game/.github/tests/test_maze_env.py -v
+          pytest .github/tests/test_maze_env.py -v
   
   test-docker:
     runs-on: ubuntu-latest
@@ -42,11 +42,7 @@ jobs:
       - name: Test with docker-compose
         run: |
           XAUTH=/tmp/.docker.xauth
-          touch $XAUTH
-          echo "ffff 0100000000000000 $(openssl rand -hex 100)" > $XAUTH
-          chmod 777 $XAUTH
-          
-          export DISPLAY=${DISPLAY}
+
           export XAUTH=$XAUTH
           export XAUTHORITY=$XAUTH
           
